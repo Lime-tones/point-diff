@@ -107,7 +107,7 @@ class Inference:
 
             case "DPM++ 2M Karras":
                 return DPMSolverMultistepScheduler.from_config(
-                    self.pipe.scheduler.config, use_karras_sigmas=True
+                    self.pipe.scheduler.config(use_karras_sigmas=True)
                 )
 
             case "DPM++ 2M SDE":
