@@ -207,6 +207,23 @@ class Inference:
 
         return image
 
+if prompt:
+        infer = Inference(output_path, sdxl=sdxl, disable_torch_compile=disable_torch_compile)
+        images = infer.validate(prompt, image_output, sdxl=sdxl)
+        free_memory()
+    
+        if image_output:
+            basename = os.path.splitext(os.path.basename(image_output))[0]
+            dirpath = os.path.dirname(image_output)
+            
+            if isinstance(images, list):
+                for idx, img in enumerate(images):
+                    img.save(os.path.join(dirpath, f'{basename}_{idx}.png'))
+            else:
+                images.save(image_output)
+    
+        return images
+
 def load_checkpoint(checkpoint_path):
     """
     Load a PyTorch checkpoint file (.ckpt).
@@ -221,11 +238,19 @@ def load_checkpoint(checkpoint_path):
     return checkpoint
 
 def main():
-    parser = argparse.ArgumentParser(description="Inference using a checkpoint file")
-    parser.add_argument("--checkpoint-path", required=True, help="Path to the checkpoint file (.ckpt)")
-    # Add any other relevant arguments here
+    args = parse_arguments()
 
-    args = parser.parse_args()
+    checkpoint_merger(
+        interpolation=args.interpolation,
+        multiplier=args.multiplier,
+        half=args.half,
+        discard_weights=args.discard_weights,
+        validate=args.validate,
+        prompt=args.prompt,
+        image_output=args.image_output,
+        sampler=args.sampler,
+        sdxl=args.sdxl,
+        disable_torch_compile=args.disable_torch_compile,
 
     # Load the checkpoint
     checkpoint = load_checkpoint(args.checkpoint_path)
