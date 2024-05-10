@@ -1,7 +1,32 @@
 import os
-import sys
+import re
+import gc
 import argparse
+import random
 import torch
+import safetensors.torch
+from PIL import Image
+from typing import Optional, Union, Literal, Dict, cast
+
+from diffusers import (
+    AutoencoderKL,
+    StableDiffusionXLPipeline,
+    StableDiffusionPipeline,
+    DPMSolverMultistepScheduler,
+    DPMSolverSinglestepScheduler,
+    KDPM2DiscreteScheduler,
+    EulerDiscreteScheduler,
+    EulerAncestralDiscreteScheduler,
+    HeunDiscreteScheduler,
+    LMSDiscreteScheduler,
+    DDIMScheduler,
+    DEISMultistepScheduler,
+    UniPCMultistepScheduler,
+)
+
+def free_memory():
+    gc.collect()
+    torch.cuda.empty_cache()
 
 def load_checkpoint(checkpoint_path):
     """
